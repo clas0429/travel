@@ -96,7 +96,7 @@ include __DIR__ . '/partials/header.php';
     </section>
     <?php else: ?>
     <section class="gm-empty">
-      尚未設定任何地點資料，請更新 <code>config/local-data.php</code>。
+      尚未設定任何地點資料，請確認資料庫內容或執行 <code>php database/seed.php</code>。
     </section>
     <?php endif; ?>
   </div>
