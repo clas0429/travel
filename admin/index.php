@@ -320,39 +320,314 @@ $currentLocation = $currentLocationId && isset($locations[$currentLocationId])
   <link rel="stylesheet" href="../assets/css/local-tailwind.css">
   <link rel="stylesheet" href="../assets/css/tokens.css">
   <style>
-    body { background: var(--surface); color: var(--ink); font-family: 'Noto Sans TC', system-ui, sans-serif; }
-    .admin-container { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; display: flex; flex-direction: column; gap: 2rem; }
-    h1 { font-size: 2rem; font-weight: 700; }
-    h2 { font-size: 1.4rem; font-weight: 600; margin-top: 1.5rem; }
-    form { display: grid; gap: 1rem; background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 18px 48px -24px rgba(15,23,42,0.22); }
-    fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 1rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.95rem; }
-    input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select {
-      padding: 0.65rem 0.8rem; border: 1px solid rgba(15,23,42,0.18); border-radius: 0.75rem; background: white; font-size: 0.95rem;
+    :root {
+      --admin-bg: linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.02) 100%);
+      --panel-bg: rgba(255, 255, 255, 0.96);
+      --panel-border: rgba(15, 23, 42, 0.12);
+      --accent-strong: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --danger: #dc2626;
+      --danger-soft: rgba(220, 38, 38, 0.12);
+      --success: #15803d;
+      --success-soft: rgba(21, 128, 61, 0.16);
+      --text-secondary: rgba(15, 23, 42, 0.65);
     }
-    textarea { min-height: 160px; }
-    .button-row { display: flex; gap: 0.75rem; }
-    button, .link-button {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.65rem 1.4rem; border-radius: 999px;
-      border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; text-decoration: none;
+
+    body {
+      background: var(--admin-bg);
+      color: var(--ink);
+      font-family: 'Noto Sans TC', system-ui, sans-serif;
+      line-height: 1.6;
     }
-    button.is-danger { background: #dc2626; }
-    .flash { padding: 0.9rem 1.1rem; border-radius: 0.9rem; font-size: 0.95rem; }
-    .flash.success { background: rgba(34,197,94,0.18); color: #166534; }
-    .flash.error { background: rgba(248,113,113,0.18); color: #7f1d1d; }
-    table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.92); border-radius: 1rem; overflow: hidden; }
-    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(15,23,42,0.12); text-align: left; }
-    th { background: rgba(15,23,42,0.05); font-weight: 600; }
-    tr:last-child td { border-bottom: none; }
-    .section-card { background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 1.25rem; box-shadow: 0 18px 48px -24px rgba(15,23,42,0.18); display: grid; gap: 1.25rem; }
-    .section-card header { display: flex; flex-direction: column; gap: 0.35rem; }
-    .stack { display: grid; gap: 1.5rem; }
-    .nav-bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-    .nav-bar a { color: var(--accent); text-decoration: none; font-weight: 600; }
-    .item-actions { display: flex; gap: 0.5rem; }
-    .muted { color: rgba(15,23,42,0.65); font-size: 0.9rem; }
-    .inline-form { display: inline-block; margin: 0; }
-    .inline-form button { padding: 0.45rem 1rem; font-size: 0.85rem; }
+
+    .admin-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.25rem;
+    }
+
+    h1 {
+      font-size: 2.125rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: rgba(15, 23, 42, 0.92);
+    }
+
+    h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-top: 0;
+      color: rgba(15, 23, 42, 0.92);
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+      color: rgba(15, 23, 42, 0.88);
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+      background: var(--panel-bg);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 22px 45px -30px rgba(15, 23, 42, 0.32);
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+      color: rgba(15, 23, 42, 0.86);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea,
+    select {
+      padding: 0.7rem 0.85rem;
+      border: 1px solid rgba(15, 23, 42, 0.18);
+      border-radius: 0.75rem;
+      background: white;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: rgba(37, 99, 235, 0.65);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    button,
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.65rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--accent-strong);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover,
+    .link-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px -20px rgba(37, 99, 235, 0.7);
+    }
+
+    button:focus-visible,
+    .link-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.28);
+    }
+
+    button.is-secondary,
+    .link-button.is-secondary {
+      background: rgba(15, 23, 42, 0.08);
+      color: rgba(15, 23, 42, 0.88);
+    }
+
+    button.is-danger {
+      background: var(--danger);
+    }
+
+    button.is-danger:hover {
+      box-shadow: 0 12px 30px -20px rgba(220, 38, 38, 0.7);
+    }
+
+    .flash {
+      padding: 1rem 1.2rem;
+      border-radius: 0.9rem;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+    }
+
+    .flash.success {
+      background: var(--success-soft);
+      color: var(--success);
+      border-color: rgba(21, 128, 61, 0.24);
+    }
+
+    .flash.error {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: rgba(220, 38, 38, 0.24);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel-bg);
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid var(--panel-border);
+    }
+
+    th,
+    td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.04);
+      font-weight: 600;
+      color: rgba(15, 23, 42, 0.75);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.02);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .section-card {
+      background: transparent;
+      padding: 0;
+      border-radius: 1.25rem;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .section-card header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 1.5rem;
+      border-radius: 1.25rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 22px 45px -36px rgba(15, 23, 42, 0.35);
+    }
+
+    .section-card header p {
+      margin: 0;
+    }
+
+    .section-card header + * {
+      margin-top: -0.5rem;
+    }
+
+    .section-card > form,
+    .section-card > article,
+    .section-card > p,
+    .section-card > .stack {
+      margin: 0;
+    }
+
+    .section-card header + form,
+    .section-card header + .stack,
+    .section-card header + article {
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem;
+    }
+
+    .stack {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 1rem;
+      padding: 1.2rem 1.5rem;
+      box-shadow: 0 22px 45px -32px rgba(15, 23, 42, 0.35);
+    }
+
+    .nav-bar a {
+      color: var(--accent-strong);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .muted {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .inline-form {
+      display: inline-block;
+      margin: 0;
+    }
+
+    .inline-form button {
+      padding: 0.45rem 1.1rem;
+      font-size: 0.85rem;
+    }
+
+    .section-divider {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0));
+    }
+
+    @media (max-width: 768px) {
+      .nav-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .button-row {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      button,
+      .link-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -360,7 +635,7 @@ $currentLocation = $currentLocationId && isset($locations[$currentLocationId])
     <div class="nav-bar">
       <h1>Guide Magnets 後台管理</h1>
       <div class="button-row">
-        <a class="link-button" href="../index.php">返回前台</a>
+        <a class="link-button is-secondary" href="../index.php">返回前台</a>
         <form class="inline-form" method="post" action="logout.php">
           <button type="submit" class="is-danger">登出</button>
         </form>
