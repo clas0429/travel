@@ -7,7 +7,7 @@ Guide Magnets 現在完全以 PHP 與 MySQL 為核心，提供旅遊地點、日
 - **前台導覽**：呈現地點封面、亮點摘要、旅遊日誌、相片集與影音花絮。
 - **後台管理**：透過瀏覽器即可新增、更新與刪除地點、亮點、日誌、相片與影音內容。
 - **檔案上傳**：支援上傳圖片與影片，檔案會存放於專案 `uploads/` 目錄，資料表記錄檔案路徑與 MIME 類型。
-- **MySQL 儲存**：所有內容、排序與登入資料皆來自 MySQL，內建示範資料與預設管理員帳號。
+- **MySQL 儲存**：所有內容、排序與登入資料皆來自 MySQL，內建預載旅遊資料與預設管理員帳號。
 
 ## 系統需求
 
@@ -23,11 +23,11 @@ Guide Magnets 現在完全以 PHP 與 MySQL 為核心，提供旅遊地點、日
    mysql -u root -p lioho < database/schema.sql
    ```
 2. 調整 `config/database.php` 內的連線資訊（資料庫、帳號與密碼）。
-3. 匯入示範資料並建立預設管理員：
+3. 匯入預設資料並建立預設管理員：
    ```bash
    php database/seed.php
    ```
-   會建立與 `config/local-data.php` 相同的示範地點，同時新增管理員帳號 `admin` / `admin1234`（建議登入後立即更改密碼）。
+   會建立與 `config/local-data.php` 相同的預設地點，同時新增管理員帳號 `admin` / `admin1234`（建議登入後立即更改密碼）。
 4. 啟動開發伺服器：
    ```bash
    php -S 127.0.0.1:8000
@@ -49,17 +49,17 @@ Guide Magnets 現在完全以 PHP 與 MySQL 為核心，提供旅遊地點、日
 
 ```
 assets/           # 前端樣式與圖片資源
-config/           # 靜態示範資料與資料庫設定
+config/           # 預設行程資料與資料庫設定
 includes/         # 共用函式、資料庫與後台工具
 admin/            # 後台登入與管理介面
 uploads/          # 使用者上傳的圖片與影片（已加入 .gitignore）
 database/schema.sql  # MySQL 資料表定義
-database/seed.php    # 匯入示範資料與預設管理員
+database/seed.php    # 匯入預設資料與預設管理員
 ```
 
 ## 自訂與擴充
 
-- `config/local-data.php` 仍可作為匯入示範資料的來源，執行 `php database/seed.php` 會覆蓋資料表並重新寫入。
+- `config/local-data.php` 仍可作為匯入預設資料的來源，執行 `php database/seed.php` 會覆蓋資料表並重新寫入。
 - 如需額外欄位，可修改 `database/schema.sql` 後再調整 `includes/functions.php` 內的 CRUD 函式與後台表單。
 - 若在生產環境使用，請：
   - 變更預設管理員密碼並視需求新增其他帳號。
