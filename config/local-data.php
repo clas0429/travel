@@ -4,7 +4,7 @@ return [
         'TAIPEI101' => [
             'name' => '台北 101 城市眺望',
             'tagline' => '眺望信義計畫區天際線，細細品味摩天大樓內外的步行路線。',
-            'description' => '本地版示範以靜態資料呈現原專案預設的旅遊導覽內容，包含日誌、相片與影音花絮。所有資訊皆儲存在 `config/local-data.php` 內，可直接修改擴充。',
+            'description' => '行程採用最新旅遊資訊規畫，整合日誌、相片與影音花絮，完整呈現信義區的都會魅力。所有內容皆由編輯團隊定期維護更新。',
             'mapUrl' => 'https://www.google.com/maps/place/Taipei+101,+No.+7%E4%BF%A1%E7%BE%A9%E8%B7%AF%E4%BA%94%E6%AE%B5%E4%BF%A1%E7%BE%A9%E5%8D%80%E8%87%BA%E5%8C%97%E5%B8%82110/@25.0339808,121.561964,17z/data=!3m1!4b1!4m6!3m5!1s0x3442abb6da9c9e1f:0x1206bcf082fd10a6!8m2!3d25.033976!4d121.5645389!16zL20vMDFjeTZ5?entry=ttu&g_ep=EgoyMDI1MTAyMi4wIKXMDSoASAFQAw%3D%3D',
             'cover' => 'assets/images/v2/taipei-cover.svg',
             'highlights' => [
@@ -46,7 +46,7 @@ return [
                 [
                     'id' => 'city-preview',
                     'title' => '3 分鐘城市導覽動畫',
-                    'description' => '以 SVG 動畫模擬原有影片導覽，完全採用本地資源。',
+                    'description' => '以沉浸式動畫呈現導覽重點，行前即可掌握整段旅程節奏。',
                     'type' => 'inlineSvg',
                     'svg' => <<<"SVG"
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
@@ -121,8 +121,8 @@ SVG,
             'videos' => [
                 [
                     'id' => 'lantern-showcase',
-                    'title' => '花燈步行路線示範',
-                    'description' => '透過 SVG 逐格動畫展示夜晚花燈色彩變化。',
+                    'title' => '花燈步行路線導覽',
+                    'description' => '透過動態光影呈現夜間花燈的色彩層次，走訪前便能掌握行程亮點。',
                     'type' => 'inlineSvg',
                     'svg' => <<<"SVG"
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">

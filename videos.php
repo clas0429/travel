@@ -8,9 +8,9 @@ include __DIR__ . '/partials/header.php';
     <?php if ($GM_V2_CURRENT_LOCATION): ?>
     <section class="gm-card gm-section">
       <div class="gm-section__header">
-        <span class="gm-badge">Local Videos</span>
+        <span class="gm-badge">Travel Videos</span>
         <h1 class="gm-section__title"><?php echo gm_v2_escape($GM_V2_CURRENT_LOCATION['name'] ?? ''); ?> — 影音花絮</h1>
-        <p class="gm-section__subtitle">影音改以內嵌 SVG 與本地資源呈現，即使離線也能播放示範片段。</p>
+        <p class="gm-section__subtitle">影音內容以動態視覺呈現導覽亮點，提供身歷其境的旅程預覽。</p>
       </div>
     </section>
     <?php if (!empty($GM_V2_CURRENT_LOCATION['videos'])): ?>
@@ -19,7 +19,7 @@ include __DIR__ . '/partials/header.php';
       <article class="gm-video-card">
         <header class="gm-section__header">
           <h3 class="gm-section__title" style="font-size:1.2rem;">
-            <?php echo gm_v2_escape($video['title'] ?? '示範影片'); ?>
+            <?php echo gm_v2_escape($video['title'] ?? '旅程影片'); ?>
           </h3>
           <?php if (!empty($video['description'])): ?>
           <p class="gm-section__subtitle"><?php echo gm_v2_escape($video['description']); ?></p>

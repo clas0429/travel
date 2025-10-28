@@ -565,7 +565,7 @@ function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
                 $photoStmt->execute([
                     ':location_id' => $locationId,
                     ':slug' => $photo['id'] ?? $photo['slug'] ?? null,
-                    ':title' => $photo['title'] ?? '示範相片',
+                    ':title' => $photo['title'] ?? '旅程相片',
                     ':description' => $photo['description'] ?? null,
                     ':image_path' => $photo['image'] ?? null,
                     ':attribution' => $photo['attribution'] ?? null,
@@ -577,7 +577,7 @@ function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
                 $videoStmt->execute([
                     ':location_id' => $locationId,
                     ':slug' => $video['id'] ?? $video['slug'] ?? null,
-                    ':title' => $video['title'] ?? '示範影音',
+                    ':title' => $video['title'] ?? '旅程影音',
                     ':description' => $video['description'] ?? null,
                     ':type' => $video['type'] ?? 'inlineSvg',
                     ':embed_url' => $video['url'] ?? $video['embedUrl'] ?? $video['source'] ?? null,
