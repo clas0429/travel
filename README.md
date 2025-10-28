@@ -1,173 +1,71 @@
-# Guide Magnets QR Portal
+# Guide Magnets QR Portal (MySQL Edition)
 
-Guide Magnets 是一個以 PHP 為核心、結合 Firebase 生態系的旅遊內容平台。每個實體磁鐵都對應一組 QR Code，掃描後會導向特定地點與分類（日誌、相片或影音），僅限登入會員檢視。專案同時提供基本的管理後台以維護地點與素材。
+Guide Magnets 現在完全以 PHP 與 MySQL 為核心，提供旅遊地點、日誌、相片與影音素材的瀏覽與維護功能。專案內建管理後台，可直接上傳封面、相片與影音檔案，並把資料存放於 MySQL 資料庫中，適合部署在無需 Firebase 的內網或獨立伺服器環境。
 
-## 環境需求
-- PHP 8.0 以上（建議 8.1+）。
-- 可執行 `php -S 127.0.0.1:8000 -t public` 的本地環境，或 Apache / Nginx 等支援 PHP 的伺服器。
-- Firebase 專案並啟用 Authentication、Cloud Firestore、Cloud Storage。
+## 功能總覽
 
-### 本地快速啟動
-```bash
-cp config/env.sample.php config/env.php
-# 編輯 env.php，填入 Firebase Web App 設定
-php -S 127.0.0.1:8000 -t public
-```
-瀏覽 `http://127.0.0.1:8000/index.php`，即可測試首頁與登入流程。若要模擬 QR 驗證，可帶入 `loc`、`cat`、`k` 參數。
+- **前台導覽**：呈現地點封面、亮點摘要、旅遊日誌、相片集與影音花絮。
+- **後台管理**：透過瀏覽器即可新增、更新與刪除地點、亮點、日誌、相片與影音內容。
+- **檔案上傳**：支援上傳圖片與影片，檔案會存放於專案 `uploads/` 目錄，資料表記錄檔案路徑與 MIME 類型。
+- **MySQL 儲存**：所有內容、排序與登入資料皆來自 MySQL，內建示範資料與預設管理員帳號。
 
-### 本地 Demo（免 Firebase 設定）
-若想快速展示 UI 與內容結構，可改走示範資料模式：
+## 系統需求
 
-1. 直接啟動同一個 PHP 內建伺服器：
+- PHP 8.0 以上（建議 8.1+）
+- MySQL 5.7 / 8.0 或相容資料庫（MariaDB 10.4+）
+- 可執行 `php -S` 或 Apache / Nginx 等支援 PHP 的伺服器
+
+## 安裝步驟
+
+1. 建立資料庫並匯入 Schema：
    ```bash
-   php -S 127.0.0.1:8000 -t public
-   ```
-2. 造訪 `http://127.0.0.1:8000/demo/index.php`。
-
-Demo 版本的資料存放於 `config/demo-data.php`，可依需求自行新增地點、旅遊日誌、相片或影片資訊。
-
-### 第二版：Local v2 全功能頁面
-若需要在離線或未配置 Firebase 的環境展示完整體驗，可使用全新的 Local v2：
-
-1. 啟動 PHP 伺服器：
-   ```bash
-   php -S 127.0.0.1:8000 -t public
-   ```
-2. 造訪 `http://127.0.0.1:8000/v2/index.php`。
-
-Local v2 使用 `config/local-data.php` 內的靜態資料，並搭配 `assets/css/local-tailwind.css`、`assets/images/v2/` 等本地資源呈現旅遊日誌、相片與影音花絮。可依需求調整檔案內容以擴充地點與素材。
-
-## MySQL 資料庫設定
-若希望在離線環境也能透過資料庫管理 Local v2 內容，可啟用專案內建的 PDO 連線與 CRUD 函式：
-
-1. 調整 `config/database.php` 內的連線資訊（預設為 `root@localhost` 以及 `lioho` 資料庫）。
-2. 在 MySQL 建立資料庫後，匯入 `database/schema.sql` 建立必要的資料表：
-   ```bash
+   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS lioho CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
    mysql -u root -p lioho < database/schema.sql
    ```
-3. 若想快速導入與 `config/local-data.php` 相同的示範資料，可執行：
+2. 調整 `config/database.php` 內的連線資訊（資料庫、帳號與密碼）。
+3. 匯入示範資料並建立預設管理員：
    ```bash
    php database/seed.php
    ```
-   以上指令會先清除既有資料，再依序寫入地點、亮點、日誌、相片與影音內容。
-
-完成後，前台頁面會改由資料庫提供內容，同時也可透過 `includes/functions.php` 提供的 `gm_v2_create_*`、`gm_v2_update_*` 與 `gm_v2_delete_*` 函式自訂管理介面或 API。
-
-## Firebase 設定流程
-1. **建立 Web App**：於 Firebase Console 新增 Web App，取得 `firebaseConfig` 物件。
-2. **設定環境檔**：複製 `config/env.sample.php` 為 `config/env.php`，將上述 `firebaseConfig` 值依序填入。
-3. **啟用登入方式**：在 Authentication 啟用 Email/Password，視需求可再擴充。
-4. **Firestore & Storage 初始化**：先建立 Cloud Firestore（建議 Production 模式）及 Cloud Storage Bucket。
-
-### 套用安全性規則
-將 `security/firestore.rules` 與 `security/storage.rules` 套用至對應服務，可於 Console 編輯器貼上後發布，或使用 CLI：
-```bash
-firebase deploy --only firestore:rules,storage:rules --project YOUR_PROJECT_ID
-```
-
-## 建立假資料
-1. 前往 Firestore → **集合** 建立 `locations`，新增文件 `TAIPEI101`：
-   ```json
-   {
-     "name": "Taipei 101",
-     "description": "台北 101 觀景台與週邊景點",
-     "myMapsUrl": "https://www.google.com/maps/d/embed?mid=...",
-     "coverImagePath": "locations/TAIPEI101/cover.jpg",
-     "qrKeyHash": "<SHA-256 雜湊值>",
-     "isPublished": true
-   }
-   ```
-2. 在 `locations/TAIPEI101/diaries` 新增 `DAY1` 文件，填入 `title`、`content`、`isPublished` 等欄位。
-3. 在 `locations/TAIPEI101/photos` 新增數張照片資料，欄位示例：
-   ```json
-   {
-     "title": "日落景色",
-     "imagePath": "locations/TAIPEI101/photos/day1-full.jpg",
-     "thumbPath": "locations/TAIPEI101/photos/day1-thumb.jpg",
-     "order": 1
-   }
-   ```
-4. 在 `locations/TAIPEI101/videos` 建立：
-   ```json
-   {
-     "type": "youtube",
-     "youtubeId": "dQw4w9WgXcQ",
-     "title": "亮點導覽",
-     "order": 1
-   }
-   ```
-
-### Storage 路徑建議
-- 地點封面：`locations/{LOC}/cover.jpg`
-- 相片：`locations/{LOC}/photos/{timestamp}-{filename}`（縮圖可與原檔並存）
-- 影音 MP4：`locations/{LOC}/videos/{timestamp}-{filename}.mp4`
-- GPX 或補充檔：`locations/{LOC}/routes/{name}.gpx`
-
-## YouTube 設定
-- 將播放清單 ID 或單支影片 ID 填入 `videos` 文件的 `youtubeId` 欄位。
-- 若使用播放清單，可搭配前端判斷顯示嵌入式播放器。
-- 影音資料也支援直接上傳 MP4，會存至 Firebase Storage，頁面讀取後取得下載 URL 播放。
-
-## QR Token 產生流程
-1. 產生隨機字串（建議 8~12 碼）。
-2. 於終端機或瀏覽器 DevTools 計算 SHA-256 16 進位字串，例如 Node.js：
+   會建立與 `config/local-data.php` 相同的示範地點，同時新增管理員帳號 `admin` / `admin1234`（建議登入後立即更改密碼）。
+4. 啟動開發伺服器：
    ```bash
-   node -e "const crypto=require('crypto');const raw='YOUR_TOKEN';console.log(crypto.createHash('sha256').update(raw).digest('hex'));"
+   php -S 127.0.0.1:8000
    ```
-3. 將結果寫入 Firestore `locations/{LOC}.qrKeyHash`，並於 QR Code 中帶入 `k=YOUR_TOKEN`。
+5. 瀏覽 `http://127.0.0.1:8000/index.php` 觀看前台；管理後台位於 `http://127.0.0.1:8000/admin/login.php`。
 
-## 後台與權限
-- 新增管理路徑 `public/admin/`：`locations.php`、`diary-edit.php`、`photos-uploader.php`、`videos-edit.php`。
-- 進入頁面時會先檢查登入，再讀取 `users/{uid}.role`，僅 `admin` 可操作，否則返回首頁。
-- 權限設定可在 Firebase Console → Authentication → Users → 編輯使用者 → **Add custom claims**，填入：
-  ```json
-  { "role": "admin" }
-  ```
+## 管理後台說明
 
-## 生產部署建議
-### Apache (.htaccess)
-確保虛擬主機的 DocumentRoot 指向 `public/`，並在 `public/.htaccess`（若需要自訂）加入：
+- 登入後即可看到地點列表，選擇任一地點即可新增亮點、旅遊日誌、相片或影音內容。
+- 上傳檔案時，系統會自動建立 `uploads/covers/`、`uploads/photos/`、`uploads/videos/` 等資料夾並儲存檔案。
+- 若已備妥外部檔案位置，也可直接輸入檔案路徑或網址，無須重新上傳。
+- 影音內容支援三種類型：
+  - **SVG 動畫**：貼上 SVG 原始碼即可離線播放。
+  - **上傳影片檔案**：接受 MP4 / WebM / OGG，並可自訂海報圖片與 MIME 類型。
+  - **外部嵌入**：填入 YouTube、Vimeo 等嵌入連結，前台會建立 iframe 播放。
+- 刪除地點時，旗下亮點、日誌、相片與影音會一併移除。
+
+## 目錄結構重點
+
 ```
-RewriteEngine On
-RewriteBase /
-RewriteRule ^$ index.php [L]
-RewriteRule ^([^.]+)$ $1.php [L]
+assets/           # 前端樣式與圖片資源
+config/           # 靜態示範資料與資料庫設定
+includes/         # 共用函式、資料庫與後台工具
+admin/            # 後台登入與管理介面
+uploads/          # 使用者上傳的圖片與影片（已加入 .gitignore）
+database/schema.sql  # MySQL 資料表定義
+database/seed.php    # 匯入示範資料與預設管理員
 ```
 
-### Nginx 範例
-```nginx
-server {
-    listen 80;
-    server_name travel.example.com;
+## 自訂與擴充
 
-    root /var/www/guide-magnets/public;
-    index index.php;
+- `config/local-data.php` 仍可作為匯入示範資料的來源，執行 `php database/seed.php` 會覆蓋資料表並重新寫入。
+- 如需額外欄位，可修改 `database/schema.sql` 後再調整 `includes/functions.php` 內的 CRUD 函式與後台表單。
+- 若在生產環境使用，請：
+  - 變更預設管理員密碼並視需求新增其他帳號。
+  - 設定 Web 伺服器對 `uploads/` 目錄的寫入權限與存取限制。
+  - 考量定期備份資料庫與上傳檔案。
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
+## 授權
 
-    location ~ \.php$ {
-        include fastcgi_params;
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    }
-}
-```
-啟用 HTTPS 與自訂網域時，記得更新 Firebase Authentication 授權網域及 Storage/Firestore CORS 設定。
-
-## 常見問題
-| 問題 | 排除方式 |
-| --- | --- |
-| 首頁白屏或無法載入 | 檢查 `config/env.php` 是否填入正確 Firebase 設定，開啟瀏覽器主控台查看錯誤。 |
-| 出現 CORS 錯誤 | 於 Firebase Console → Storage → 規則/CORS 設定允許來源；Firestore 需確認網域在授權清單。 |
-| Storage 403 權限錯誤 | 確認使用者已登入且 Storage 規則允許讀寫；開發時可暫時放寬規則測試。 |
-| 時區不正確 | PHP 預設時區可在 `php.ini` 或程式中設定 `date_default_timezone_set('Asia/Taipei');`；Firestore Timestamp 需於前端轉換。 |
-| QR 驗證失敗 | 比對 `qrKeyHash` 與實際 token 的 SHA-256 是否相符，並確認 URL 中的 `loc`、`cat`、`k` 參數。 |
-
-## 相關頁面與模組
-- 前台：`public/index.php`、`login.php`、`diary.php`、`photos.php`、`videos.php`
-- JS 模組：`assets/js/firebase-init.js`、`auth.js`、`qr.js`、`api.*.js`
-- 後台：`public/admin/locations.php`、`diary-edit.php`、`photos-uploader.php`、`videos-edit.php`
-
-完成上述設定後，即可建立專屬的旅遊磁鐵體驗，並透過 Firebase 後端同步管理內容。
+原始碼依照專案所屬授權條款使用。若需商業或客製化支援，歡迎另行洽談。

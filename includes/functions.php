@@ -328,7 +328,7 @@ function gm_v2_create_video(string $locationId, array $data): int
     }
 
     $pdo = gm_v2_db();
-    $stmt = $pdo->prepare('INSERT INTO videos (location_id, slug, title, description, type, embed_url, svg_content, sort_order) VALUES (:location_id, :slug, :title, :description, :type, :embed_url, :svg_content, :sort_order)');
+    $stmt = $pdo->prepare('INSERT INTO videos (location_id, slug, title, description, type, embed_url, svg_content, poster_path, mime_type, sort_order) VALUES (:location_id, :slug, :title, :description, :type, :embed_url, :svg_content, :poster_path, :mime_type, :sort_order)');
     $stmt->execute([
         ':location_id' => $locationId,
         ':slug' => $data['slug'] ?? null,
@@ -337,6 +337,8 @@ function gm_v2_create_video(string $locationId, array $data): int
         ':type' => $data['type'] ?? 'inlineSvg',
         ':embed_url' => $data['url'] ?? $data['embedUrl'] ?? null,
         ':svg_content' => $data['svg'] ?? $data['svgContent'] ?? null,
+        ':poster_path' => $data['poster'] ?? $data['posterPath'] ?? null,
+        ':mime_type' => $data['mime'] ?? $data['mimeType'] ?? null,
         ':sort_order' => isset($data['sortOrder']) ? (int) $data['sortOrder'] : 0,
     ]);
 
@@ -352,7 +354,7 @@ function gm_v2_update_video(int $videoId, array $data): bool
     }
 
     $pdo = gm_v2_db();
-    $stmt = $pdo->prepare('UPDATE videos SET slug = :slug, title = :title, description = :description, type = :type, embed_url = :embed_url, svg_content = :svg_content, sort_order = :sort_order WHERE id = :id');
+    $stmt = $pdo->prepare('UPDATE videos SET slug = :slug, title = :title, description = :description, type = :type, embed_url = :embed_url, svg_content = :svg_content, poster_path = :poster_path, mime_type = :mime_type, sort_order = :sort_order WHERE id = :id');
     $stmt->execute([
         ':id' => $videoId,
         ':slug' => $data['slug'] ?? null,
@@ -361,6 +363,8 @@ function gm_v2_update_video(int $videoId, array $data): bool
         ':type' => $data['type'] ?? 'inlineSvg',
         ':embed_url' => $data['url'] ?? $data['embedUrl'] ?? null,
         ':svg_content' => $data['svg'] ?? $data['svgContent'] ?? null,
+        ':poster_path' => $data['poster'] ?? $data['posterPath'] ?? null,
+        ':mime_type' => $data['mime'] ?? $data['mimeType'] ?? null,
         ':sort_order' => isset($data['sortOrder']) ? (int) $data['sortOrder'] : 0,
     ]);
 
@@ -394,6 +398,7 @@ function gm_v2_fetch_locations_with_relations(PDO $pdo): array
             'description' => $row['description'],
             'mapUrl' => $row['map_url'],
             'cover' => $row['cover'],
+            'sortOrder' => (int) $row['sort_order'],
             'highlights' => [],
             'diaries' => [],
             'photos' => [],
@@ -412,7 +417,10 @@ function gm_v2_fetch_locations_with_relations(PDO $pdo): array
     $highlightStmt = $pdo->prepare($highlightSql);
     $highlightStmt->execute($ids);
     foreach ($highlightStmt as $highlight) {
-        $locations[$highlight['location_id']]['highlights'][] = $highlight['content'];
+        $locations[$highlight['location_id']]['highlights'][] = [
+            'id' => (int) $highlight['id'],
+            'content' => $highlight['content'],
+        ];
     }
 
     $diarySql = "SELECT id, location_id, slug, title, content, published_at, sort_order FROM diaries WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, published_at ASC, id ASC";
@@ -420,6 +428,7 @@ function gm_v2_fetch_locations_with_relations(PDO $pdo): array
     $diaryStmt->execute($ids);
     foreach ($diaryStmt as $diary) {
         $locations[$diary['location_id']]['diaries'][] = [
+            'recordId' => (int) $diary['id'],
             'id' => $diary['slug'] ?: (string) $diary['id'],
             'slug' => $diary['slug'],
             'title' => $diary['title'],
@@ -433,6 +442,7 @@ function gm_v2_fetch_locations_with_relations(PDO $pdo): array
     $photoStmt->execute($ids);
     foreach ($photoStmt as $photo) {
         $locations[$photo['location_id']]['photos'][] = [
+            'recordId' => (int) $photo['id'],
             'id' => $photo['slug'] ?: (string) $photo['id'],
             'slug' => $photo['slug'],
             'title' => $photo['title'],
@@ -447,15 +457,20 @@ function gm_v2_fetch_locations_with_relations(PDO $pdo): array
     $videoStmt->execute($ids);
     foreach ($videoStmt as $video) {
         $entry = [
+            'recordId' => (int) $video['id'],
             'id' => $video['slug'] ?: (string) $video['id'],
             'slug' => $video['slug'],
             'title' => $video['title'],
             'description' => $video['description'],
             'type' => $video['type'],
+            'poster' => $video['poster_path'],
+            'mime' => $video['mime_type'],
         ];
 
         if ($video['type'] === 'inlineSvg') {
             $entry['svg'] = $video['svg_content'];
+        } elseif ($video['type'] === 'localVideo') {
+            $entry['source'] = $video['embed_url'];
         } else {
             $entry['url'] = $video['embed_url'];
         }
@@ -507,7 +522,7 @@ function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
         $highlightStmt = $pdo->prepare('INSERT INTO location_highlights (location_id, content, sort_order) VALUES (:location_id, :content, :sort_order)');
         $diaryStmt = $pdo->prepare('INSERT INTO diaries (location_id, slug, title, content, published_at, sort_order) VALUES (:location_id, :slug, :title, :content, :published_at, :sort_order)');
         $photoStmt = $pdo->prepare('INSERT INTO photos (location_id, slug, title, description, image_path, attribution, sort_order) VALUES (:location_id, :slug, :title, :description, :image_path, :attribution, :sort_order)');
-        $videoStmt = $pdo->prepare('INSERT INTO videos (location_id, slug, title, description, type, embed_url, svg_content, sort_order) VALUES (:location_id, :slug, :title, :description, :type, :embed_url, :svg_content, :sort_order)');
+        $videoStmt = $pdo->prepare('INSERT INTO videos (location_id, slug, title, description, type, embed_url, svg_content, poster_path, mime_type, sort_order) VALUES (:location_id, :slug, :title, :description, :type, :embed_url, :svg_content, :poster_path, :mime_type, :sort_order)');
 
         $position = 0;
         foreach ($locations as $locationId => $location) {
@@ -524,9 +539,13 @@ function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
             $inserted++;
 
             foreach (($location['highlights'] ?? []) as $index => $highlight) {
+                $content = is_array($highlight) ? ($highlight['content'] ?? '') : (string) $highlight;
+                if ($content === '') {
+                    continue;
+                }
                 $highlightStmt->execute([
                     ':location_id' => $locationId,
-                    ':content' => $highlight,
+                    ':content' => $content,
                     ':sort_order' => $index,
                 ]);
             }
@@ -561,8 +580,10 @@ function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
                     ':title' => $video['title'] ?? '示範影音',
                     ':description' => $video['description'] ?? null,
                     ':type' => $video['type'] ?? 'inlineSvg',
-                    ':embed_url' => $video['url'] ?? $video['embedUrl'] ?? null,
+                    ':embed_url' => $video['url'] ?? $video['embedUrl'] ?? $video['source'] ?? null,
                     ':svg_content' => $video['svg'] ?? $video['svgContent'] ?? null,
+                    ':poster_path' => $video['poster'] ?? $video['posterPath'] ?? null,
+                    ':mime_type' => $video['mime'] ?? $video['mimeType'] ?? null,
                     ':sort_order' => $index,
                 ]);
             }
