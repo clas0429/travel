@@ -1,0 +1,5 @@
+{
+  "name": "guide-magnets/qr-portal",
+  "description": "Travel magnet QR companion site built with PHP and Firebase.",
+  "require": {}
+}

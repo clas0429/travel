@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="videoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="32" fill="url(#videoGradient)" />
+  <circle cx="160" cy="120" r="100" fill="rgba(255,255,255,0.18)" />
+  <circle cx="760" cy="420" r="120" fill="rgba(15,23,42,0.18)" />
+  <g fill="#fff" opacity="0.85">
+    <path d="M420 190 L640 270 L420 350 Z" />
+    <rect x="360" y="160" width="40" height="240" rx="14" />
+  </g>
+  <text x="50%" y="86%" font-family="'Noto Sans TC', sans-serif" font-size="42" text-anchor="middle" fill="rgba(255,255,255,0.9)">
+    城市導覽本地影片
+  </text>
+</svg>

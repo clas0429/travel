@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+  <rect width="900" height="600" fill="#fee2e2" />
+  <path d="M160 360 L450 180 L740 360 Z" fill="#f97316" opacity="0.9" />
+  <rect x="220" y="360" width="460" height="160" fill="#1f2937" rx="18" />
+  <rect x="260" y="320" width="80" height="120" fill="#fcd34d" rx="12" />
+  <rect x="560" y="320" width="80" height="120" fill="#fcd34d" rx="12" />
+  <rect x="395" y="260" width="110" height="180" fill="#fb7185" rx="16" />
+  <text x="50%" y="92%" font-family="'Noto Sans TC', sans-serif" font-size="40" text-anchor="middle" fill="#7f1d1d">
+    府城古廟
+  </text>
+</svg>

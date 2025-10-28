@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <linearGradient id="sunset" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#facc15" />
+    </linearGradient>
+    <linearGradient id="wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.85)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.5)" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#sunset)" />
+  <path d="M0 520 Q 200 460 360 520 T 720 520 T 1080 520 T 1200 520 V 720 H0 Z" fill="url(#wave)" opacity="0.8" />
+  <g fill="rgba(255,255,255,0.85)">
+    <rect x="180" y="360" width="160" height="220" rx="18" />
+    <rect x="380" y="320" width="140" height="260" rx="18" />
+    <rect x="580" y="340" width="120" height="240" rx="18" />
+    <rect x="760" y="300" width="160" height="280" rx="18" />
+    <circle cx="960" cy="380" r="70" />
+  </g>
+  <text x="50%" y="82%" font-family="'Noto Sans TC', sans-serif" font-size="56" text-anchor="middle" fill="#7c2d12" opacity="0.9">
+    台南老城光影
+  </text>
+  <text x="50%" y="90%" font-family="'Noto Sans TC', sans-serif" font-size="28" text-anchor="middle" fill="#7c2d12" opacity="0.7">
+    Morandi Journeys - Local Showcase
+  </text>
+</svg>

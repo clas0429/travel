@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+  <rect width="900" height="600" fill="#fef08a" />
+  <rect x="120" y="160" width="200" height="320" rx="22" fill="#fb7185" opacity="0.9" />
+  <rect x="360" y="140" width="240" height="360" rx="22" fill="#facc15" opacity="0.9" />
+  <rect x="640" y="200" width="140" height="300" rx="22" fill="#38bdf8" opacity="0.9" />
+  <path d="M0 460 L900 380 L900 600 L0 600 Z" fill="#fde047" opacity="0.8" />
+  <circle cx="240" cy="220" r="40" fill="#1d4ed8" opacity="0.6" />
+  <circle cx="480" cy="200" r="48" fill="#1d4ed8" opacity="0.45" />
+  <circle cx="710" cy="260" r="36" fill="#1d4ed8" opacity="0.45" />
+  <text x="50%" y="90%" font-family="'Noto Sans TC', sans-serif" font-size="40" text-anchor="middle" fill="#713f12">
+    四四南村巷弄
+  </text>
+</svg>

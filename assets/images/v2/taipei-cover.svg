@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#466cf6" />
+      <stop offset="100%" stop-color="#9ab5ff" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.95)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#sky)" />
+  <g opacity="0.25">
+    <circle cx="200" cy="160" r="160" fill="url(#glow)" />
+    <circle cx="520" cy="80" r="140" fill="url(#glow)" />
+    <circle cx="1000" cy="200" r="180" fill="url(#glow)" />
+  </g>
+  <g fill="rgba(255,255,255,0.85)">
+    <rect x="180" y="360" width="120" height="230" rx="16" />
+    <rect x="340" y="320" width="150" height="270" rx="18" />
+    <rect x="540" y="260" width="90" height="330" rx="18" />
+    <rect x="670" y="300" width="110" height="290" rx="18" />
+    <rect x="820" y="340" width="140" height="250" rx="18" />
+  </g>
+  <g fill="#1f2937">
+    <rect x="575" y="120" width="20" height="140" rx="10" />
+    <rect x="560" y="120" width="50" height="20" rx="10" />
+  </g>
+  <text x="50%" y="82%" font-family="'Noto Sans TC', sans-serif" font-size="56" text-anchor="middle" fill="#0b1a4a" opacity="0.85">
+    台北 101 城市眺望
+  </text>
+  <text x="50%" y="90%" font-family="'Noto Sans TC', sans-serif" font-size="28" text-anchor="middle" fill="#10235f" opacity="0.75">
+    Morandi Journeys - Local Showcase
+  </text>
+</svg>
