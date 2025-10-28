@@ -37,6 +37,22 @@ Demo 版本的資料存放於 `config/demo-data.php`，可依需求自行新增�
 
 Local v2 使用 `config/local-data.php` 內的靜態資料，並搭配 `assets/css/local-tailwind.css`、`assets/images/v2/` 等本地資源呈現旅遊日誌、相片與影音花絮。可依需求調整檔案內容以擴充地點與素材。
 
+## MySQL 資料庫設定
+若希望在離線環境也能透過資料庫管理 Local v2 內容，可啟用專案內建的 PDO 連線與 CRUD 函式：
+
+1. 調整 `config/database.php` 內的連線資訊（預設為 `root@localhost` 以及 `lioho` 資料庫）。
+2. 在 MySQL 建立資料庫後，匯入 `database/schema.sql` 建立必要的資料表：
+   ```bash
+   mysql -u root -p lioho < database/schema.sql
+   ```
+3. 若想快速導入與 `config/local-data.php` 相同的示範資料，可執行：
+   ```bash
+   php database/seed.php
+   ```
+   以上指令會先清除既有資料，再依序寫入地點、亮點、日誌、相片與影音內容。
+
+完成後，前台頁面會改由資料庫提供內容，同時也可透過 `includes/functions.php` 提供的 `gm_v2_create_*`、`gm_v2_update_*` 與 `gm_v2_delete_*` 函式自訂管理介面或 API。
+
 ## Firebase 設定流程
 1. **建立 Web App**：於 Firebase Console 新增 Web App，取得 `firebaseConfig` 物件。
 2. **設定環境檔**：複製 `config/env.sample.php` 為 `config/env.php`，將上述 `firebaseConfig` 值依序填入。
