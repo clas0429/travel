@@ -92,88 +92,17 @@ function gm_v2_count(array $items): int
 function gm_v2_fetch_locations_from_db(): array
 {
     $pdo = gm_v2_db();
-    $sql = 'SELECT id, name, tagline, description, map_url, cover, sort_order FROM locations ORDER BY sort_order ASC, name ASC';
-    $stmt = $pdo->query($sql);
-    $locations = [];
 
-    while ($row = $stmt->fetch()) {
-        $locations[$row['id']] = [
-            'id' => $row['id'],
-            'name' => $row['name'],
-            'tagline' => $row['tagline'],
-            'description' => $row['description'],
-            'mapUrl' => $row['map_url'],
-            'cover' => $row['cover'],
-            'highlights' => [],
-            'diaries' => [],
-            'photos' => [],
-            'videos' => [],
-        ];
+    $locations = gm_v2_fetch_locations_with_relations($pdo);
+    if (!empty($locations)) {
+        return $locations;
     }
 
-    if (empty($locations)) {
-        return [];
+    if (gm_v2_seed_database_from_local_config($pdo) > 0) {
+        return gm_v2_fetch_locations_with_relations($pdo);
     }
 
-    $ids = array_keys($locations);
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-
-    $highlightSql = "SELECT id, location_id, content FROM location_highlights WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
-    $highlightStmt = $pdo->prepare($highlightSql);
-    $highlightStmt->execute($ids);
-    foreach ($highlightStmt as $highlight) {
-        $locations[$highlight['location_id']]['highlights'][] = $highlight['content'];
-    }
-
-    $diarySql = "SELECT id, location_id, slug, title, content, published_at, sort_order FROM diaries WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, published_at ASC, id ASC";
-    $diaryStmt = $pdo->prepare($diarySql);
-    $diaryStmt->execute($ids);
-    foreach ($diaryStmt as $diary) {
-        $locations[$diary['location_id']]['diaries'][] = [
-            'id' => $diary['slug'] ?: (string) $diary['id'],
-            'slug' => $diary['slug'],
-            'title' => $diary['title'],
-            'createdAt' => $diary['published_at'],
-            'content' => $diary['content'],
-        ];
-    }
-
-    $photoSql = "SELECT id, location_id, slug, title, description, image_path, attribution, sort_order FROM photos WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
-    $photoStmt = $pdo->prepare($photoSql);
-    $photoStmt->execute($ids);
-    foreach ($photoStmt as $photo) {
-        $locations[$photo['location_id']]['photos'][] = [
-            'id' => $photo['slug'] ?: (string) $photo['id'],
-            'slug' => $photo['slug'],
-            'title' => $photo['title'],
-            'description' => $photo['description'],
-            'image' => $photo['image_path'],
-            'attribution' => $photo['attribution'],
-        ];
-    }
-
-    $videoSql = "SELECT id, location_id, slug, title, description, type, embed_url, svg_content, sort_order FROM videos WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
-    $videoStmt = $pdo->prepare($videoSql);
-    $videoStmt->execute($ids);
-    foreach ($videoStmt as $video) {
-        $entry = [
-            'id' => $video['slug'] ?: (string) $video['id'],
-            'slug' => $video['slug'],
-            'title' => $video['title'],
-            'description' => $video['description'],
-            'type' => $video['type'],
-        ];
-
-        if ($video['type'] === 'inlineSvg') {
-            $entry['svg'] = $video['svg_content'];
-        } else {
-            $entry['url'] = $video['embed_url'];
-        }
-
-        $locations[$video['location_id']]['videos'][] = $entry;
-    }
-
-    return $locations;
+    return [];
 }
 
 function gm_v2_create_location(array $data): string
@@ -449,4 +378,203 @@ function gm_v2_delete_video(int $videoId): bool
     gm_v2_locations(true);
 
     return $stmt->rowCount() > 0;
+}
+
+function gm_v2_fetch_locations_with_relations(PDO $pdo): array
+{
+    $sql = 'SELECT id, name, tagline, description, map_url, cover, sort_order FROM locations ORDER BY sort_order ASC, name ASC';
+    $stmt = $pdo->query($sql);
+    $locations = [];
+
+    while ($row = $stmt->fetch()) {
+        $locations[$row['id']] = [
+            'id' => $row['id'],
+            'name' => $row['name'],
+            'tagline' => $row['tagline'],
+            'description' => $row['description'],
+            'mapUrl' => $row['map_url'],
+            'cover' => $row['cover'],
+            'highlights' => [],
+            'diaries' => [],
+            'photos' => [],
+            'videos' => [],
+        ];
+    }
+
+    if (empty($locations)) {
+        return [];
+    }
+
+    $ids = array_keys($locations);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+    $highlightSql = "SELECT id, location_id, content FROM location_highlights WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
+    $highlightStmt = $pdo->prepare($highlightSql);
+    $highlightStmt->execute($ids);
+    foreach ($highlightStmt as $highlight) {
+        $locations[$highlight['location_id']]['highlights'][] = $highlight['content'];
+    }
+
+    $diarySql = "SELECT id, location_id, slug, title, content, published_at, sort_order FROM diaries WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, published_at ASC, id ASC";
+    $diaryStmt = $pdo->prepare($diarySql);
+    $diaryStmt->execute($ids);
+    foreach ($diaryStmt as $diary) {
+        $locations[$diary['location_id']]['diaries'][] = [
+            'id' => $diary['slug'] ?: (string) $diary['id'],
+            'slug' => $diary['slug'],
+            'title' => $diary['title'],
+            'createdAt' => $diary['published_at'],
+            'content' => $diary['content'],
+        ];
+    }
+
+    $photoSql = "SELECT id, location_id, slug, title, description, image_path, attribution, sort_order FROM photos WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
+    $photoStmt = $pdo->prepare($photoSql);
+    $photoStmt->execute($ids);
+    foreach ($photoStmt as $photo) {
+        $locations[$photo['location_id']]['photos'][] = [
+            'id' => $photo['slug'] ?: (string) $photo['id'],
+            'slug' => $photo['slug'],
+            'title' => $photo['title'],
+            'description' => $photo['description'],
+            'image' => $photo['image_path'],
+            'attribution' => $photo['attribution'],
+        ];
+    }
+
+    $videoSql = "SELECT id, location_id, slug, title, description, type, embed_url, svg_content, sort_order FROM videos WHERE location_id IN ($placeholders) ORDER BY sort_order ASC, id ASC";
+    $videoStmt = $pdo->prepare($videoSql);
+    $videoStmt->execute($ids);
+    foreach ($videoStmt as $video) {
+        $entry = [
+            'id' => $video['slug'] ?: (string) $video['id'],
+            'slug' => $video['slug'],
+            'title' => $video['title'],
+            'description' => $video['description'],
+            'type' => $video['type'],
+        ];
+
+        if ($video['type'] === 'inlineSvg') {
+            $entry['svg'] = $video['svg_content'];
+        } else {
+            $entry['url'] = $video['embed_url'];
+        }
+
+        $locations[$video['location_id']]['videos'][] = $entry;
+    }
+
+    return $locations;
+}
+
+function gm_v2_seed_database_from_local_config(?PDO $pdo = null): int
+{
+    static $seeding = false;
+
+    if ($seeding) {
+        return 0;
+    }
+
+    $dataFile = __DIR__ . '/../config/local-data.php';
+    if (!is_file($dataFile)) {
+        return 0;
+    }
+
+    $data = require $dataFile;
+    if (!is_array($data)) {
+        return 0;
+    }
+
+    $locations = $data['locations'] ?? [];
+    if (empty($locations)) {
+        return 0;
+    }
+
+    $pdo = $pdo ?? gm_v2_db();
+
+    $seeding = true;
+    $inserted = 0;
+
+    try {
+        $pdo->beginTransaction();
+
+        $pdo->exec('DELETE FROM location_highlights');
+        $pdo->exec('DELETE FROM diaries');
+        $pdo->exec('DELETE FROM photos');
+        $pdo->exec('DELETE FROM videos');
+        $pdo->exec('DELETE FROM locations');
+
+        $locationStmt = $pdo->prepare('INSERT INTO locations (id, name, tagline, description, map_url, cover, sort_order) VALUES (:id, :name, :tagline, :description, :map_url, :cover, :sort_order)');
+        $highlightStmt = $pdo->prepare('INSERT INTO location_highlights (location_id, content, sort_order) VALUES (:location_id, :content, :sort_order)');
+        $diaryStmt = $pdo->prepare('INSERT INTO diaries (location_id, slug, title, content, published_at, sort_order) VALUES (:location_id, :slug, :title, :content, :published_at, :sort_order)');
+        $photoStmt = $pdo->prepare('INSERT INTO photos (location_id, slug, title, description, image_path, attribution, sort_order) VALUES (:location_id, :slug, :title, :description, :image_path, :attribution, :sort_order)');
+        $videoStmt = $pdo->prepare('INSERT INTO videos (location_id, slug, title, description, type, embed_url, svg_content, sort_order) VALUES (:location_id, :slug, :title, :description, :type, :embed_url, :svg_content, :sort_order)');
+
+        $position = 0;
+        foreach ($locations as $locationId => $location) {
+            $locationStmt->execute([
+                ':id' => $locationId,
+                ':name' => $location['name'] ?? $locationId,
+                ':tagline' => $location['tagline'] ?? null,
+                ':description' => $location['description'] ?? null,
+                ':map_url' => $location['mapUrl'] ?? null,
+                ':cover' => $location['cover'] ?? null,
+                ':sort_order' => $position++,
+            ]);
+
+            $inserted++;
+
+            foreach (($location['highlights'] ?? []) as $index => $highlight) {
+                $highlightStmt->execute([
+                    ':location_id' => $locationId,
+                    ':content' => $highlight,
+                    ':sort_order' => $index,
+                ]);
+            }
+
+            foreach (($location['diaries'] ?? []) as $index => $diary) {
+                $diaryStmt->execute([
+                    ':location_id' => $locationId,
+                    ':slug' => $diary['id'] ?? $diary['slug'] ?? null,
+                    ':title' => $diary['title'] ?? '未命名日誌',
+                    ':content' => $diary['content'] ?? null,
+                    ':published_at' => $diary['createdAt'] ?? null,
+                    ':sort_order' => $index,
+                ]);
+            }
+
+            foreach (($location['photos'] ?? []) as $index => $photo) {
+                $photoStmt->execute([
+                    ':location_id' => $locationId,
+                    ':slug' => $photo['id'] ?? $photo['slug'] ?? null,
+                    ':title' => $photo['title'] ?? '示範相片',
+                    ':description' => $photo['description'] ?? null,
+                    ':image_path' => $photo['image'] ?? null,
+                    ':attribution' => $photo['attribution'] ?? null,
+                    ':sort_order' => $index,
+                ]);
+            }
+
+            foreach (($location['videos'] ?? []) as $index => $video) {
+                $videoStmt->execute([
+                    ':location_id' => $locationId,
+                    ':slug' => $video['id'] ?? $video['slug'] ?? null,
+                    ':title' => $video['title'] ?? '示範影音',
+                    ':description' => $video['description'] ?? null,
+                    ':type' => $video['type'] ?? 'inlineSvg',
+                    ':embed_url' => $video['url'] ?? $video['embedUrl'] ?? null,
+                    ':svg_content' => $video['svg'] ?? $video['svgContent'] ?? null,
+                    ':sort_order' => $index,
+                ]);
+            }
+        }
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    } finally {
+        $seeding = false;
+    }
+
+    return $inserted;
 }
