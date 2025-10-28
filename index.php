@@ -41,7 +41,9 @@ include __DIR__ . '/partials/header.php';
         <?php if (!empty($GM_V2_CURRENT_LOCATION['highlights'])): ?>
         <ul class="gm-highlight-list">
           <?php foreach ($GM_V2_CURRENT_LOCATION['highlights'] as $highlight): ?>
-          <li><?php echo gm_v2_escape($highlight); ?></li>
+          <?php $content = is_array($highlight) ? ($highlight['content'] ?? '') : (string) $highlight; ?>
+          <?php if ($content === '') { continue; } ?>
+          <li><?php echo gm_v2_escape($content); ?></li>
           <?php endforeach; ?>
         </ul>
         <?php endif; ?>

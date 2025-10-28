@@ -39,6 +39,20 @@ include __DIR__ . '/partials/header.php';
             您的瀏覽器不支援影片播放。
           </video>
           <?php
+          } elseif (!empty($video['url'])) {
+              if ($type === 'external') {
+          ?>
+          <div class="gm-video-embed">
+            <iframe src="<?php echo gm_v2_escape($video['url']); ?>" title="<?php echo gm_v2_escape($video['title'] ?? '影音內容'); ?>" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <?php
+              } else {
+          ?>
+          <a class="gm-button" href="<?php echo gm_v2_escape($video['url']); ?>" target="_blank" rel="noopener">
+            觀看影片<span class="gm-button__icon" aria-hidden="true">↗</span>
+          </a>
+          <?php
+              }
           } else {
           ?>
           <img src="/assets/images/v2/video-poster.svg" alt="影片預覽圖">
