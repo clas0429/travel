@@ -9,7 +9,7 @@ include __DIR__ . '/partials/header.php';
     <?php if ($GM_V2_CURRENT_LOCATION): ?>
     <section class="gm-hero">
       <div class="gm-hero__text">
-        <span class="gm-badge">Local Data</span>
+        <span class="gm-badge">Featured Route</span>
         <h1 class="gm-hero__title"><?php echo gm_v2_escape($GM_V2_CURRENT_LOCATION['name'] ?? ''); ?></h1>
         <?php if (!empty($GM_V2_CURRENT_LOCATION['tagline'])): ?>
         <p class="gm-hero__description"><?php echo gm_v2_escape($GM_V2_CURRENT_LOCATION['tagline']); ?></p>
@@ -48,7 +48,7 @@ include __DIR__ . '/partials/header.php';
         </ul>
         <?php endif; ?>
         <?php if (!empty($GM_V2_CURRENT_LOCATION['mapUrl'])): ?>
-        <a class="gm-map-link" href="<?php echo gm_v2_escape($GM_V2_CURRENT_LOCATION['mapUrl']); ?>" target="_blank" rel="noopener"><span aria-hidden="true">🗺️</span>查看示範地圖</a>
+        <a class="gm-map-link" href="<?php echo gm_v2_escape($GM_V2_CURRENT_LOCATION['mapUrl']); ?>" target="_blank" rel="noopener"><span aria-hidden="true">🗺️</span>查看路線地圖</a>
         <?php endif; ?>
       </div>
       <div class="gm-hero__art">
@@ -67,14 +67,14 @@ include __DIR__ . '/partials/header.php';
     <section class="gm-section gm-section--accent">
       <div class="gm-section__header">
         <h2 class="gm-section__title">功能捷徑</h2>
-        <p class="gm-section__subtitle">本地資料庫完整收錄旅遊日誌、相片集與影音花絮，可直接瀏覽。</p>
+        <p class="gm-section__subtitle">導覽資料庫完整收錄旅遊日誌、相片集與影音花絮，資訊即時同步。</p>
       </div>
       <div class="gm-grid gm-grid--thirds">
         <article class="gm-card gm-category-card">
           <span class="gm-category-card__icon" aria-hidden="true">🗺️</span>
           <div>
             <h3>旅遊日誌</h3>
-            <p>以 HTML 格式呈現原本 Firestore Rich Text，支援段落、列表與標註。</p>
+            <p>以圖文並茂的方式呈現行程亮點，支援段落、列表與標註。</p>
           </div>
           <a class="gm-button" href="<?php echo gm_v2_nav_url('diary.php'); ?>">前往日誌<span class="gm-button__icon" aria-hidden="true">↗</span></a>
         </article>
@@ -82,7 +82,7 @@ include __DIR__ . '/partials/header.php';
           <span class="gm-category-card__icon" aria-hidden="true">📸</span>
           <div>
             <h3>旅途相片</h3>
-            <p>使用本地 SVG 及圖片檔案展示行程亮點，保留完整說明與攝影資訊。</p>
+            <p>高解析度相片記錄旅程精華，提供完整說明與攝影資訊。</p>
           </div>
           <a class="gm-button" href="<?php echo gm_v2_nav_url('photos.php'); ?>">查看相片<span class="gm-button__icon" aria-hidden="true">↗</span></a>
         </article>
@@ -90,7 +90,7 @@ include __DIR__ . '/partials/header.php';
           <span class="gm-category-card__icon" aria-hidden="true">🎬</span>
           <div>
             <h3>影音花絮</h3>
-            <p>透過 SVG 動畫示範原影音段落，確保在離線環境依舊可呈現重點。</p>
+            <p>多媒體花絮以動態影音呈現導覽片段，帶來沉浸式體驗。</p>
           </div>
           <a class="gm-button" href="<?php echo gm_v2_nav_url('videos.php'); ?>">播放花絮<span class="gm-button__icon" aria-hidden="true">↗</span></a>
         </article>
