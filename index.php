@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 require __DIR__ . '/includes/bootstrap.php';
 include __DIR__ . '/partials/head.php';
 include __DIR__ . '/partials/header.php';

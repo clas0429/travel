@@ -40,7 +40,7 @@ $messages = gm_admin_get_flash();
     h1 { font-size: 1.8rem; font-weight: 700; margin: 0; }
     p { margin: 0; color: rgba(255,255,255,0.78); }
     label { display: grid; gap: 0.5rem; font-size: 0.95rem; }
-    input[type="text"], input[type="password"] { padding: 0.8rem 1rem; border-radius: 0.75rem; border: none; outline: none; font-size: 1rem; }
+    input[type="text"], input[type="password"] { padding: 0.8rem 1rem; border-radius: 0.75rem; border: none; outline: none; font-size: 1rem; color:black}
     button { padding: 0.9rem 1rem; border-radius: 999px; border: none; background: #fbbf24; color: #1f2937; font-weight: 700; cursor: pointer; }
     .flash { padding: 0.9rem 1rem; border-radius: 0.9rem; font-size: 0.95rem; }
     .flash.success { background: rgba(34,197,94,0.3); color: #dcfce7; }

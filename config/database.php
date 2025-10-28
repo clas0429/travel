@@ -1,5 +1,5 @@
 <?php
-$DBNAME   = "lioho";
+$DBNAME   = "travel";
 $DBUSER   = "root";
 $DBPASSWD = "kuma@42749128";
 $DBHOST   = "localhost";
